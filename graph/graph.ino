@@ -47,23 +47,35 @@ void loop()
   
   // Получаем значения УЗ дальномера
   float uSDistance = readUSDistance();
-
-  float middleValue = (iRDistance + uSDistance) / 2;
   
   // Конвертируем данные в диапазон [0, 7]
-  int currentColumnHeight = translateToLedMatrixValues(middleValue);
-  distanceValues[0] = currentColumnHeight;
+  int currentIRColumnHeight = translateToLedMatrixValues(iRDistance);
+  int currentUSColumnHeight = translateToLedMatrixValues(uSDistance);
+  
+  distanceValues[0] = currentIRColumnHeight;
+  distanceValues[4] = currentUSColumnHeight;
 
   lc.clearDisplay(0);
   
-  for (int j = 0; j <= 7; j++){
+  for (int j = 0; j <= 3; j++){
      for (int i = 0; i <= distanceValues[j] ; i++){
         lc.setLed(0, i, j, true);
     }
   }
 
-  // сдвигаем значения, чтобы поместить новый столбик с новым значением
-  for (int i = sizeof(distanceValues) - 1; i > 0; i--){
+  for (int j = 4; j <= 7; j++){
+     for (int i = 0; i <= distanceValues[j] ; i++){
+        lc.setLed(0, i, j, true);
+    }
+  }
+
+  // сдвигаем значения, чтобы поместить новый столбик с новым значением ИК дальномера
+  for (int i = 3; i > 0; i--){
+    distanceValues[i] = distanceValues[i-1];
+  }
+
+  //сдвиг для УЗ дальномера
+  for (int i = 7; i > 4; i--){
     distanceValues[i] = distanceValues[i-1];
   }
   
